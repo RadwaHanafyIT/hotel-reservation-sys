@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking.com</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hotel"></i>
+                    <span>Booking.com</span>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="#" class="active" data-page="home">Home</a>
+                    <a href="#" data-page="search">Find Hotels</a>
+                    <a href="#" data-page="dashboard" id="dashboard-link" class="hidden">Dashboard</a>
+                    <a href="#" data-page="hotel-owner" id="hotel-owner-link" class="hidden">Hotel Owner</a>
+                </div>
+                
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ar">AR</button>
+                </div>
+                
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-outline" id="login-btn">Login</button>
+                    <button class="btn btn-warning" id="register-btn">Register</button>
+                </div>
+                
+                <div class="user-menu hidden" id="user-menu">
+                    <span id="user-name" style="color: white;">
+                        <span id="user-display-name">John Doe</span>
+                        <span id="user-role-badge" class="user-role-badge"></span>
+                    </span>
+                    <button class="btn btn-outline ml-2" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home-section" class="page-section">
+            <div class="hero">
+                <div class="container">
+                    <h1>Find Your Perfect Stay</h1>
+                    <p>Book hotels worldwide with our easy-to-use reservation system. Best prices guaranteed with secure payments and 24/7 customer support.</p>
+                    <button class="btn btn-warning btn-lg" id="search-hotels-btn">Search Hotels Now</button>
+                </div>
+            </div>
+            
+            <div class="container">
+                <div class="search-container fade-in">
+                    <h3 class="mb-3">Find Available Rooms</h3>
+                    <form id="search-form" class="search-form">
+                        <div class="form-group">
+                            <label for="checkin">Check-in Date</label>
+                            <input type="date" id="checkin" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkout">Check-out Date</label>
+                            <input type="date" id="checkout" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guests">Guests</label>
+                            <select id="guests" class="form-control">
+                                <option value="0">Any</option>
+                                <option value="1">1 Guest</option>
+                                <option value="2" selected>2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5+ Guests</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="room-type">Room Type</label>
+                            <select id="room-type" class="form-control">
+                                <option value="all">All Types</option>
+                                <option value="single">Single</option>
+                                <option value="double">Double</option>
+                                <option value="suite">Suite</option>
+                                <option value="deluxe">Deluxe</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price-range">Price Range (per night)</label>
+                            <div class="price-filter">
+                                <input type="number" id="min-price" class="form-control price-input" placeholder="Min $">
+                                <span>to</span>
+                                <input type="number" id="max-price" class="form-control price-input" placeholder="Max $">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary search-btn">Search Rooms</button>
+                            <button type="button" class="btn btn-outline mt-2" onclick="clearSearchFilters()">Clear Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="search-section" class="page-section hidden">
+            <div class="container main-content">
+                <h2 class="section-title">Available Rooms</h2>
+                <div class="rooms-grid" id="rooms-container">
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard-section" class="page-section hidden">
+            <div class="container main-content">
+                <h2 class="section-title">User Dashboard</h2>
+                <div id="dashboard">
+                </div>
+            </div>
+        </section>
+
+        <section id="hotel-owner-section" class="page-section hidden">
+            <div class="container main-content">
+                <h2 class="section-title">Hotel Owner Panel</h2>
+                <div class="admin-controls">
+                    <button class="btn btn-primary" data-hotel-owner="rooms">My Hotel Rooms</button>
+                    <button class="btn btn-primary" data-hotel-owner="bookings">My Hotel Bookings</button>
+                    <button class="btn btn-primary" data-hotel-owner="reports">My Hotel Reports</button>
+                    <button class="btn btn-primary" data-hotel-owner="notifications">Send Promotions</button>
+                </div>
+                
+                <div id="hotel-owner-content">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="login">&times;</button>
+            <div class="modal-header">
+                <h3>Login to Your Account</h3>
+            </div>
+            <form id="login-form">
+                <div class="form-group mb-3">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="login-role">Login As</label>
+                    <select id="login-role" class="form-control">
+                        <option value="customer">Customer</option>
+                        <option value="hotel_owner">Hotel Owner</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            <p class="text-center mt-3">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="register">&times;</button>
+            <div class="modal-header">
+                <h3>Create Your Account</h3>
+            </div>
+            <form id="register-form">
+                <div class="form-group mb-3">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="reg-phone">Phone Number</label>
+                    <input type="tel" id="reg-phone" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="reg-role">Account Type</label>
+                    <select id="reg-role" class="form-control">
+                        <option value="customer">Customer</option>
+                        <option value="hotel_owner">Hotel Owner</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3" id="hotel-info-group" style="display: none;">
+                    <label for="hotel-name">Hotel Name</label>
+                    <input type="text" id="hotel-name" class="form-control">
+                    <label for="hotel-address" class="mt-2">Hotel Address</label>
+                    <input type="text" id="hotel-address" class="form-control">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="reg-confirm-password">Confirm Password</label>
+                    <input type="password" id="reg-confirm-password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="booking">&times;</button>
+            <div class="modal-header">
+                <h3>Complete Your Booking</h3>
+            </div>
+            <div id="booking-details">
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="payment">&times;</button>
+            <div class="modal-header">
+                <h3>Secure Payment</h3>
+                <p>Choose your payment method</p>
+            </div>
+            <div class="payment-form">
+                <div class="payment-methods">
+                    <div class="payment-method active" data-method="credit">
+                        <i class="fas fa-credit-card fa-2x"></i>
+                        <p>VISA / MasterCard</p>
+                    </div>
+                    <div class="payment-method" data-method="fawry">
+                        <i class="fas fa-mobile-alt fa-2x"></i>
+                        <p>Fawry</p>
+                    </div>
+                    <div class="payment-method" data-method="instapay">
+                        <i class="fas fa-bolt fa-2x"></i>
+                        <p>InstaPay</p>
+                    </div>
+                </div>
+                
+                <div id="credit-card-form" class="payment-form-content">
+                    <div class="form-group mb-3">
+                        <label for="card-number">Card Number</label>
+                        <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="form-group mb-3 w-50">
+                            <label for="expiry-date">Expiry Date</label>
+                            <input type="text" id="expiry-date" class="form-control" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group mb-3 w-50">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" class="form-control" placeholder="123">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="fawry-form" class="payment-form-content hidden">
+                    <div class="form-group mb-3">
+                        <label for="fawry-phone">Mobile Number</label>
+                        <input type="text" id="fawry-phone" class="form-control" placeholder="01xxxxxxxxx">
+                    </div>
+                    <p class="text-center">You will receive a payment code via SMS</p>
+                </div>
+                
+                <div id="instapay-form" class="payment-form-content hidden">
+                    <div class="form-group mb-3">
+                        <label for="instapay-bank">Select Bank</label>
+                        <select id="instapay-bank" class="form-control">
+                            <option value="cib">CIB</option>
+                            <option value="qnb">QNB</option>
+                            <option value="hsbc">HSBC</option>
+                            <option value="nbe">NBE</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="payment-amount">Amount to Pay</label>
+                    <input type="text" id="payment-amount" class="form-control" readonly>
+                </div>
+                
+                <button class="btn btn-success w-100" id="confirm-payment">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="room-management-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="room-management">&times;</button>
+            <div class="modal-header">
+                <h3>Manage Room</h3>
+            </div>
+            <form id="room-management-form">
+                <input type="hidden" id="room-id">
+                <div class="form-group mb-3">
+                    <label for="room-name">Room Name</label>
+                    <input type="text" id="room-name" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-type">Room Type</label>
+                    <select id="room-type-edit" class="form-control" required>
+                        <option value="single">Single</option>
+                        <option value="double">Double</option>
+                        <option value="suite">Suite</option>
+                        <option value="deluxe">Deluxe</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-price">Price per Night ($)</label>
+                    <input type="number" id="room-price" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-capacity">Capacity (Guests)</label>
+                    <input type="number" id="room-capacity" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-description">Description</label>
+                    <textarea id="room-description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-amenities">Amenities (comma separated)</label>
+                    <input type="text" id="room-amenities" class="form-control" placeholder="WiFi, TV, AC, Breakfast">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="room-status">Room Status</label>
+                    <select id="room-status" class="form-control">
+                        <option value="available">Available</option>
+                        <option value="booked">Booked</option>
+                        <option value="maintenance">Under Maintenance</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" id="save-room-btn">Save Room</button>
+                    <button type="button" class="btn btn-danger hidden" id="delete-room-btn">Delete Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" data-modal="notification">&times;</button>
+            <div class="modal-header">
+                <h3>Send Notifications</h3>
+            </div>
+            <form id="notification-form">
+                <div class="form-group mb-3">
+                    <label for="notification-type">Notification Type</label>
+                    <select id="notification-type" class="form-control">
+                        <option value="booking_confirmation">Booking Confirmation</option>
+                        <option value="checkin_reminder">Check-in Reminder</option>
+                        <option value="checkout_reminder">Check-out Reminder</option>
+                        <option value="promotion">Promotional Offer</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="notification-title">Title</label>
+                    <input type="text" id="notification-title" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="notification-message">Message</label>
+                    <textarea id="notification-message" class="form-control" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Send Notification</button>
+            </form>
+        </div>
+    </div>
+
+    <footer style="background-color: var(--primary); color: white; padding: 40px 0; margin-top: 60px;">
+        <div class="container">
+            <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+                <div>
+                    <h3 style="margin-bottom: 20px; color: #ffb700;">Booking.com</h3>
+                    <p>Your trusted partner in hotel reservations worldwide. Book with confidence with our secure platform.</p>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 20px;">Main Users</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px; color: #ffb700;">Customers</li>
+                        <li style="margin-bottom: 10px; color: #ffb700;">Hotel Owners</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 20px;">Payment Partners</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><i class="fab fa-cc-visa"></i> VISA</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-mobile-alt"></i> Fawry</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-bolt"></i> InstaPay</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 20px;">Contact Us</h3>
+                    <p><i class="fas fa-phone" style="margin-right: 10px;"></i> +1 (800) 123-4567</p>
+                    <p><i class="fas fa-envelope" style="margin-right: 10px;"></i> info@booking.com</p>
+                    <p><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> 123 Booking Street, New York, NY</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p>&copy; 2023 Booking.com. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    </body>
+</html>
